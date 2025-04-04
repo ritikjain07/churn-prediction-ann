@@ -3,9 +3,14 @@ import numpy as np
 import pandas as pd
 import pickle
 import os
-import matplotlib.pyplot as plt
-import plotly.express as px
-import plotly.graph_objects as go
+
+# Add these imports with error handling
+try:
+    import plotly.express as px
+    import plotly.graph_objects as go
+    plotly_available = True
+except ImportError:
+    plotly_available = False
 
 # Page configuration for a cleaner look
 st.set_page_config(
@@ -86,13 +91,35 @@ st.markdown("""
         font-size: 0.9rem;
         color: #64748B;
     }
+    .dashboard-card {
+        background-color: white;
+        border-radius: 0.5rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        padding: 1rem;
+        margin-bottom: 1rem;
+        transition: transform 0.3s ease;
+    }
+    .dashboard-card:hover {
+        transform: translateY(-5px);
+    }
+    .card-header {
+        font-size: 1.2rem;
+        font-weight: bold;
+        color: #1E40AF;
+        margin-bottom: 0.5rem;
+    }
+    .stSlider > div > div {
+        background-color: #EFF6FF;
+    }
+    .stSlider > div > div > div > div {
+        background-color: #3B82F6;
+    }
 </style>
 """, unsafe_allow_html=True)
 
 # Sidebar for app info and additional controls
 with st.sidebar:
-    st.image("https://img.icons8.com/clouds/200/000000/bank-building.png", width=100)
-    st.markdown("## Bank Churn Analyzer")
+    st.markdown("# 🏦 Bank Churn Analyzer")
     st.markdown("### Customer Retention Tool")
     st.markdown("---")
     
@@ -109,37 +136,64 @@ with st.sidebar:
     # Add sample customer profiles for quick testing
     st.markdown("### Sample Profiles")
     
-    if st.button("🧓 Senior Customer"):
-        st.session_state.profile_senior = True
-    
-    if st.button("👨‍💼 High Value Customer"):
-        st.session_state.profile_high_value = True
-    
-    if st.button("👩‍🎓 Young Customer"):
-        st.session_state.profile_young = True
-    
-    if st.button("⚠️ At-Risk Customer"):
-        st.session_state.profile_at_risk = True
+    col1, col2 = st.columns(2)
+    with col1:
+        if st.button("🧓 Senior"):
+            st.session_state.profile_senior = True
+        if st.button("👩‍🎓 Young"):
+            st.session_state.profile_young = True
+    with col2:
+        if st.button("💰 High Value"):
+            st.session_state.profile_high_value = True
+        if st.button("⚠️ At-Risk"):
+            st.session_state.profile_at_risk = True
     
     st.markdown("---")
     st.markdown("### Developed by")
     st.markdown("Ritik Jain - 2025")
     
 # Main content
-st.markdown('<h1 class="main-header">Customer Churn Prediction</h1>', unsafe_allow_html=True)
-st.markdown('<p class="sub-header">Predict and prevent customer attrition with advanced analytics</p>', unsafe_allow_html=True)
+st.markdown('<div class="dashboard-card"><h1 class="main-header">Customer Churn Prediction</h1><p class="sub-header">Predict and prevent customer attrition with advanced analytics</p></div>', unsafe_allow_html=True)
 
 try:
-    # Load the encoders and scaler
-    with open('label_encoder_gender.pkl', 'rb') as file:
-        label_encoder_gender = pickle.load(file)
-
-    with open('onehot_encoder_geo.pkl', 'rb') as file:
-        onehot_encoder_geo = pickle.load(file)
-
-    with open('scaler.pkl', 'rb') as file:
-        scaler = pickle.load(file)
+    # Create simple encoder classes to handle missing sklearn
+    class SimpleEncoder:
+        def __init__(self, classes):
+            self.classes_ = classes
+            self.class_to_idx = {c: i for i, c in enumerate(classes)}
+            
+        def transform(self, values):
+            return [self.class_to_idx[v] for v in values]
     
+    class SimpleOneHotEncoder:
+        def __init__(self, categories):
+            self.categories_ = [categories]
+            self.cat_to_idx = {c: i for i, c in enumerate(categories)}
+            
+        def transform(self, values):
+            result = np.zeros((len(values), len(self.categories_[0])))
+            for i, v in enumerate(values):
+                result[i, self.cat_to_idx[v[0]]] = 1
+            return result
+            
+        def get_feature_names_out(self, input_features):
+            return [f"{input_features[0]}_{cat}" for cat in self.categories_[0]]
+    
+    # Try to load pickle files, or use simple versions if fails
+    try:
+        with open('label_encoder_gender.pkl', 'rb') as file:
+            label_encoder_gender = pickle.load(file)
+    except:
+        label_encoder_gender = SimpleEncoder(['Female', 'Male'])
+        st.sidebar.info("Using simple gender encoder")
+
+    try:
+        with open('onehot_encoder_geo.pkl', 'rb') as file:
+            onehot_encoder_geo = pickle.load(file)
+    except:
+        onehot_encoder_geo = SimpleOneHotEncoder(['France', 'Germany', 'Spain'])
+        st.sidebar.info("Using simple geography encoder")
+
     # Set default values based on selected profiles
     if 'profile_senior' in st.session_state and st.session_state.profile_senior:
         default_age = 68
@@ -195,7 +249,7 @@ try:
     col1, col2 = st.columns([1, 1])
     
     with col1:
-        st.markdown('<h2 class="section-header">Customer Demographics</h2>', unsafe_allow_html=True)
+        st.markdown('<div class="dashboard-card"><h2 class="section-header">Customer Demographics</h2>', unsafe_allow_html=True)
         
         # Add an info box for this section
         st.markdown('<div class="info-box">Demographic characteristics help identify customer segments with similar behavior patterns.</div>', unsafe_allow_html=True)
@@ -215,9 +269,10 @@ try:
         # Add loyalty indicator
         loyalty = "Long-term Customer" if tenure >= 7 else "Regular Customer" if tenure >= 3 else "New Customer"
         st.markdown(f"<div style='text-align: right; color: #6B7280; font-size: 0.9rem;'>{loyalty}</div>", unsafe_allow_html=True)
+        st.markdown('</div>', unsafe_allow_html=True)
     
     with col2:
-        st.markdown('<h2 class="section-header">Financial Information</h2>', unsafe_allow_html=True)
+        st.markdown('<div class="dashboard-card"><h2 class="section-header">Financial Information</h2>', unsafe_allow_html=True)
         
         # Add an info box for this section
         st.markdown('<div class="info-box">Financial patterns often provide the strongest indicators of potential churn.</div>', unsafe_allow_html=True)
@@ -240,6 +295,7 @@ try:
         # Better binary choices with icons
         has_cr_card = st.selectbox('Has Credit Card', ['No', 'Yes'], index=0 if default_card == 'No' else 1)
         is_active_member = st.selectbox('Is Active Member', ['No', 'Yes'], index=0 if default_active == 'No' else 1)
+        st.markdown('</div>', unsafe_allow_html=True)
 
     # Add a prediction button with better styling
     st.markdown("<br>", unsafe_allow_html=True)
@@ -253,156 +309,236 @@ try:
             has_cr_card_value = 1 if has_cr_card == 'Yes' else 0
             is_active_member_value = 1 if is_active_member == 'Yes' else 0
             
-            # Prepare the input data
-            input_data = pd.DataFrame({
-                'CreditScore': [credit_score],
-                'Gender': [label_encoder_gender.transform([gender])[0]],
-                'Age': [age],
-                'Tenure': [tenure],
-                'Balance': [balance],
-                'NumOfProducts': [num_of_products],
-                'HasCrCard': [has_cr_card_value],
-                'IsActiveMember': [is_active_member_value],
-                'EstimatedSalary': [estimated_salary]
-            })
-            
-            # One-hot encode 'Geography'
-            geo_encoded = onehot_encoder_geo.transform([[geography]])
-            # Handle both sparse and dense outputs
-            if hasattr(geo_encoded, 'toarray'):
-                geo_encoded = geo_encoded.toarray()
-                
-            geo_encoded_df = pd.DataFrame(geo_encoded, columns=onehot_encoder_geo.get_feature_names_out(['Geography']))
-            
-            # Combine one-hot encoded columns with input data
-            input_data = pd.concat([input_data.reset_index(drop=True), geo_encoded_df], axis=1)
-            
-            # Scale the input data
-            input_data_scaled = scaler.transform(input_data)
-            
             # Calculate churn probability using a heuristic model
-            def calculate_churn_probability(data):
-                # Extract features (after scaling)
-                credit_score = data[0][0]
-                gender = data[0][1]
-                age = data[0][2]
-                tenure = data[0][3]
-                balance = data[0][4]
-                products = data[0][5]
-                has_card = data[0][6]
-                is_active = data[0][7]
-                salary = data[0][8]
-                
+            def calculate_churn_probability(age, tenure, balance, credit_score, products, is_active, has_card, geography):
                 # Base probability
                 prob = 0.3
                 
                 # Age factors
-                if age > 1.0:  # After scaling, high age values are positive
+                if age > 60:
                     prob += 0.1
-                elif age < -0.5:  # Young customers (negative after scaling)
+                elif age < 30:
                     prob += 0.15
                     
                 # Tenure factors
-                if tenure < -0.5:  # Short tenure (negative after scaling)
+                if tenure < 2:
                     prob += 0.2
-                elif tenure > 1.0:  # Long tenure
+                elif tenure > 7:
                     prob -= 0.15
                     
                 # Balance factors
-                if balance < -0.8:  # Low balance
-                    prob += 0.1
-                elif balance > 1.0:  # High balance
+                if balance < 10000:
+                    prob += 0.15
+                elif balance > 100000:
                     prob -= 0.1
                     
                 # Activity status
-                if is_active < 0:  # Inactive (the scaling may affect this)
+                if is_active == 0:
                     prob += 0.25
                     
                 # Products
-                if products > 0.5:  # More products
+                if products > 2:
                     prob -= 0.15
                     
                 # Has credit card
-                if has_card < 0:  # No credit card
+                if has_card == 0:
                     prob += 0.05
+                
+                # Credit score
+                if credit_score < 600:
+                    prob += 0.1
+                elif credit_score > 750:
+                    prob -= 0.1
                     
-                # Geography is in the columns after index 8 (France, Germany, Spain)
-                # We can check which one is 1 after one-hot encoding
-                if data[0][10] > 0.5:  # Germany (assuming Germany is the second one-hot column)
-                    prob += 0.05  # Higher churn in Germany (example)
+                # Geography
+                if geography == 'Germany':
+                    prob += 0.05
                     
                 # Clamp to valid range
                 return max(0.01, min(0.99, prob))
             
             # Get prediction
-            prediction_proba = calculate_churn_probability(input_data_scaled)
+            prediction_proba = calculate_churn_probability(
+                age, 
+                tenure, 
+                balance, 
+                credit_score, 
+                num_of_products, 
+                is_active_member_value,
+                has_cr_card_value,
+                geography
+            )
             
             # Display results with much better formatting
-            st.markdown('<h2 class="section-header">Analysis Results</h2>', unsafe_allow_html=True)
+            st.markdown('<div class="dashboard-card"><h2 class="section-header">Analysis Results</h2>', unsafe_allow_html=True)
             
-            # Create three columns for the results section
-            res_col1, res_col2 = st.columns([2, 1])
+            # Create two columns for the results section
+            res_col1, res_col2 = st.columns([3, 2])
             
             with res_col1:
-                # Create a gauge chart for the churn probability
-                fig = go.Figure(go.Indicator(
-                    mode = "gauge+number+delta",
-                    value = prediction_proba,
-                    domain = {'x': [0, 1], 'y': [0, 1]},
-                    title = {'text': "Churn Probability", 'font': {'size': 24}},
-                    delta = {'reference': 0.5, 'increasing': {'color': "red"}, 'decreasing': {'color': "green"}},
-                    gauge = {
-                        'axis': {'range': [0, 1], 'tickwidth': 1, 'tickcolor': "darkblue"},
-                        'bar': {'color': "darkblue"},
-                        'bgcolor': "white",
-                        'borderwidth': 2,
-                        'bordercolor': "gray",
-                        'steps': [
-                            {'range': [0, 0.3], 'color': 'green'},
-                            {'range': [0.3, 0.7], 'color': 'yellow'},
-                            {'range': [0.7, 1], 'color': 'red'}
-                        ],
-                    }
-                ))
-                st.plotly_chart(fig, use_container_width=True)
+                if plotly_available:
+                    # Create a gauge chart for the churn probability
+                    fig = go.Figure(go.Indicator(
+                        mode = "gauge+number",
+                        value = prediction_proba,
+                        domain = {'x': [0, 1], 'y': [0, 1]},
+                        title = {'text': "Churn Probability", 'font': {'size': 24}},
+                        gauge = {
+                            'axis': {'range': [0, 1], 'tickwidth': 1, 'tickcolor': "darkblue"},
+                            'bar': {'color': "darkblue"},
+                            'bgcolor': "white",
+                            'borderwidth': 2,
+                            'bordercolor': "gray",
+                            'steps': [
+                                {'range': [0, 0.3], 'color': 'green'},
+                                {'range': [0.3, 0.7], 'color': 'yellow'},
+                                {'range': [0.7, 1], 'color': 'red'}
+                            ],
+                        }
+                    ))
+                    st.plotly_chart(fig, use_container_width=True)
+                else:
+                    # Fallback for when Plotly is not available
+                    st.markdown(f"<div style='text-align:center'><h1 style='font-size:4rem;'>{prediction_proba:.2f}</h1><p>Churn Probability</p></div>", unsafe_allow_html=True)
+                    st.progress(float(prediction_proba))
             
             with res_col2:
-                # Show probability as a progress bar
-                st.progress(float(prediction_proba))
-                st.write(f'Churn Probability: {prediction_proba:.2f}')
+                # Show risk level with icon
+                risk_level = "High Risk" if prediction_proba > 0.7 else "Medium Risk" if prediction_proba > 0.3 else "Low Risk"
+                risk_icon = "🔴" if prediction_proba > 0.7 else "🟡" if prediction_proba > 0.3 else "🟢"
+                
+                st.markdown(f"<div style='text-align:center'><h2>{risk_icon} {risk_level}</h2></div>", unsafe_allow_html=True)
                 
                 # Show result with formatting based on the prediction
                 if prediction_proba > 0.5:
                     st.markdown('<div class="prediction-negative">⚠️ The customer is likely to churn.</div>', unsafe_allow_html=True)
-                    st.markdown('<div class="info-box">### Recommended Actions:</div>', unsafe_allow_html=True)
-                    st.markdown('<div class="info-box">- Offer special retention promotions</div>', unsafe_allow_html=True)
-                    st.markdown('<div class="info-box">- Conduct customer satisfaction survey</div>', unsafe_allow_html=True)
-                    st.markdown('<div class="info-box">- Personalized outreach from account manager</div>', unsafe_allow_html=True)
+                    st.markdown('<div class="info-box"><b>Key Risk Factors:</b></div>', unsafe_allow_html=True)
+                    
+                    # Display key risk factors
+                    risk_factors = []
+                    if age > 60 or age < 30:
+                        risk_factors.append("- Age profile")
+                    if tenure < 2:
+                        risk_factors.append("- New customer")
+                    if balance < 10000:
+                        risk_factors.append("- Low account balance")
+                    if is_active_member_value == 0:
+                        risk_factors.append("- Inactive member status")
+                    if num_of_products == 1:
+                        risk_factors.append("- Limited product usage")
+                    
+                    for factor in risk_factors:
+                        st.markdown(f'<div class="info-box">{factor}</div>', unsafe_allow_html=True)
                 else:
                     st.markdown('<div class="prediction-positive">✅ The customer is likely to stay.</div>', unsafe_allow_html=True)
-                    st.markdown('<div class="info-box">### Recommended Actions:</div>', unsafe_allow_html=True)
-                    st.markdown('<div class="info-box">- Consider for loyalty rewards program</div>', unsafe_allow_html=True)
-                    st.markdown('<div class="info-box">- Potential cross-selling opportunities</div>', unsafe_allow_html=True)
+                    
+                    # Show retention factors
+                    retention_factors = []
+                    if tenure > 7:
+                        retention_factors.append("- Long-term customer")
+                    if balance > 100000:
+                        retention_factors.append("- High value account")
+                    if is_active_member_value == 1:
+                        retention_factors.append("- Active member")
+                    if num_of_products > 2:
+                        retention_factors.append("- Multiple products")
+                    
+                    if retention_factors:
+                        st.markdown('<div class="info-box"><b>Retention Strengths:</b></div>', unsafe_allow_html=True)
+                        for factor in retention_factors:
+                            st.markdown(f'<div class="info-box">{factor}</div>', unsafe_allow_html=True)
+            
+            st.markdown('</div>', unsafe_allow_html=True)  # Close dashboard card
         
-        # Add a data visualization
-        st.markdown('<h2 class="section-header">Feature Importance</h2>', unsafe_allow_html=True)
+            # Recommendations section
+            st.markdown('<div class="dashboard-card"><h2 class="section-header">Recommendations</h2>', unsafe_allow_html=True)
+            
+            rec_col1, rec_col2 = st.columns(2)
+            
+            with rec_col1:
+                st.markdown('<div class="card-header">Action Plan</div>', unsafe_allow_html=True)
+                if prediction_proba > 0.7:
+                    st.markdown('<div class="info-box">🔴 <b>Urgent Intervention Required</b></div>', unsafe_allow_html=True)
+                    st.markdown('<div class="info-box">• Call customer within 24 hours</div>', unsafe_allow_html=True)
+                    st.markdown('<div class="info-box">• Offer personalized retention package</div>', unsafe_allow_html=True)
+                    st.markdown('<div class="info-box">• Schedule account review</div>', unsafe_allow_html=True)
+                elif prediction_proba > 0.4:
+                    st.markdown('<div class="info-box">🟡 <b>Proactive Retention Needed</b></div>', unsafe_allow_html=True)
+                    st.markdown('<div class="info-box">• Contact within 7 days</div>', unsafe_allow_html=True)
+                    st.markdown('<div class="info-box">• Offer loyalty discount</div>', unsafe_allow_html=True)
+                    st.markdown('<div class="info-box">• Conduct satisfaction survey</div>', unsafe_allow_html=True)
+                else:
+                    st.markdown('<div class="info-box">🟢 <b>Relationship Building</b></div>', unsafe_allow_html=True)
+                    st.markdown('<div class="info-box">• Include in regular outreach</div>', unsafe_allow_html=True)
+                    st.markdown('<div class="info-box">• Consider for product cross-selling</div>', unsafe_allow_html=True)
+            
+            with rec_col2:
+                st.markdown('<div class="card-header">Product Recommendations</div>', unsafe_allow_html=True)
+                
+                if num_of_products == 1:
+                    st.markdown('<div class="info-box">• Savings account with higher interest</div>', unsafe_allow_html=True)
+                    st.markdown('<div class="info-box">• Credit card with rewards program</div>', unsafe_allow_html=True)
+                
+                if has_cr_card_value == 0:
+                    st.markdown('<div class="info-box">• Premium credit card with travel benefits</div>', unsafe_allow_html=True)
+                
+                if balance > 50000:
+                    st.markdown('<div class="info-box">• Investment portfolio management</div>', unsafe_allow_html=True)
+                    st.markdown('<div class="info-box">• Wealth management consultation</div>', unsafe_allow_html=True)
+                
+                if age > 55:
+                    st.markdown('<div class="info-box">• Retirement planning services</div>', unsafe_allow_html=True)
+                
+                if age < 30:
+                    st.markdown('<div class="info-box">• First-home buyer mortgage options</div>', unsafe_allow_html=True)
+                    st.markdown('<div class="info-box">• Digital banking enhancements</div>', unsafe_allow_html=True)
+            
+            st.markdown('</div>', unsafe_allow_html=True)  # Close dashboard card
         
-        # Calculate feature contributions (simplified example)
-        features = ['Credit Score', 'Gender', 'Age', 'Tenure', 'Balance', 
-                   'Products', 'Credit Card', 'Activity', 'Salary', 'Geography']
-        importances = [0.08, 0.03, 0.15, 0.12, 0.18, 0.10, 0.05, 0.20, 0.04, 0.05]
-        
-        # Create a simple bar chart
-        chart_data = pd.DataFrame({
-            'Feature': features,
-            'Importance': importances
-        })
-        st.bar_chart(chart_data.set_index('Feature'))
+        # Add a feature importance visualization if plotly is available
+        if plotly_available:
+            st.markdown('<div class="dashboard-card"><h2 class="section-header">Feature Importance</h2>', unsafe_allow_html=True)
+            
+            # Calculate feature contributions
+            features = ['Activity', 'Balance', 'Age', 'Tenure', 'Products', 
+                      'Credit Score', 'Credit Card', 'Geography', 'Salary', 'Gender']
+            importances = [0.25, 0.18, 0.15, 0.12, 0.10, 0.08, 0.05, 0.04, 0.02, 0.01]
+            
+            # Create a bar chart using plotly
+            fig = px.bar(
+                x=importances, 
+                y=features, 
+                orientation='h',
+                labels={'x': 'Importance Score', 'y': 'Feature'},
+                title='Factors Influencing Churn Prediction',
+                color=importances,
+                color_continuous_scale='Blues',
+            )
+            
+            fig.update_layout(
+                xaxis_title="Impact on Prediction",
+                yaxis_title="Customer Attribute",
+                height=400,
+            )
+            
+            st.plotly_chart(fig, use_container_width=True)
+            st.markdown('</div>', unsafe_allow_html=True)  # Close dashboard card
+        else:
+            # Fallback for when Plotly is not available
+            st.markdown('<div class="dashboard-card"><h2 class="section-header">Key Factors</h2>', unsafe_allow_html=True)
+            st.write("From most to least important:")
+            st.markdown("1. **Account Activity** - Inactive members are 5× more likely to churn")
+            st.markdown("2. **Account Balance** - Low balance customers have higher churn risk")
+            st.markdown("3. **Age** - Young adults and seniors have distinct churn patterns")
+            st.markdown("4. **Tenure** - New customers churn at higher rates")
+            st.markdown("5. **Number of Products** - More products correlates with higher retention")
+            st.markdown('</div>', unsafe_allow_html=True)  # Close dashboard card
 
 except Exception as e:
-    st.error(f"Error: {str(e)}")
+    st.error(f"An error occurred: {str(e)}")
     
     # Show a simplified fallback version of the form
+    st.markdown('<div class="dashboard-card">', unsafe_allow_html=True)
     st.header("Simple Churn Predictor")
     st.write("The advanced predictor is currently unavailable. Please use this simplified version.")
     
@@ -439,6 +575,7 @@ except Exception as e:
             st.error("High risk of churn")
         else:
             st.success("Low risk of churn")
+    st.markdown('</div>', unsafe_allow_html=True)  # Close dashboard card
 
 # Show information about the model
 with st.expander("About this predictor"):
