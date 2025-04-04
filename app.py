@@ -20,137 +20,263 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Custom CSS for better styling
+# Custom CSS for better styling with improved contrast and layout
 st.markdown("""
 <style>
-    .main-header {
-        font-size: 2.5rem;
-        color: #1E3A8A;
-        margin-bottom: 0;
+    /* Improve base font for better readability */
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: #0F172A;
     }
+    
+    /* Headers with better contrast */
+    .main-header {
+        font-size: 2.3rem;
+        color: #0F172A;
+        margin-bottom: 0.5rem;
+        font-weight: 700;
+    }
+    
     .sub-header {
         font-size: 1.1rem;
-        color: #64748B;
+        color: #334155;
         margin-top: 0;
         margin-bottom: 2rem;
+        font-weight: 400;
     }
+    
     .section-header {
-        font-size: 1.5rem;
-        color: #334155;
+        font-size: 1.4rem;
+        color: #0F172A;
         margin-top: 1rem;
         padding-top: 1rem;
         border-top: 1px solid #E2E8F0;
+        font-weight: 600;
     }
+    
+    /* Results panels with better contrast */
     .prediction-positive {
         background-color: #DCFCE7;
+        color: #14532D;
         padding: 1.5rem;
         border-radius: 0.5rem;
         border-left: 0.5rem solid #22C55E;
+        margin-bottom: 1rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        font-weight: 600;
     }
+    
     .prediction-negative {
         background-color: #FEE2E2;
+        color: #7F1D1D;
         padding: 1.5rem;
         border-radius: 0.5rem;
         border-left: 0.5rem solid #EF4444;
+        margin-bottom: 1rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        font-weight: 600;
     }
+    
+    /* Info box with better contrast */
     .info-box {
-        background-color: #F1F5F9;
+        background-color: #F8FAFC;
+        color: #334155;
         padding: 1rem;
         border-radius: 0.5rem;
         margin-bottom: 1rem;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        border: 1px solid #E2E8F0;
+        line-height: 1.5;
     }
+    
+    /* Progress bar styling */
     .stProgress > div > div > div > div {
-        background-color: #3B82F6;
+        background-color: #2563EB;
     }
+    
+    /* Button styling */
     .stButton>button {
         background-color: #2563EB;
         color: white;
         border-radius: 0.25rem;
-        padding: 0.5rem 2rem;
-        font-weight: bold;
+        padding: 0.75rem 2.5rem;
+        font-weight: 600;
+        font-size: 1rem;
+        border: none;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     }
+    
     .stButton>button:hover {
         background-color: #1D4ED8;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
     }
+    
+    /* Sidebar styling */
     [data-testid="stSidebar"] {
         background-color: #F8FAFC;
+        border-right: 1px solid #E2E8F0;
     }
+    
+    /* Card styling with fixed heights and overflow handling */
     .metric-card {
         background-color: white;
         border-radius: 0.5rem;
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        padding: 1rem;
+        padding: 1.25rem;
         text-align: center;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
     }
+    
     .metric-value {
         font-size: 1.8rem;
-        font-weight: bold;
+        font-weight: 700;
         color: #0F172A;
     }
+    
     .metric-label {
         font-size: 0.9rem;
-        color: #64748B;
+        color: #334155;
+        font-weight: 500;
     }
+    
     .dashboard-card {
-        background-color: white;
+        background-color: B4EBE6;
         border-radius: 0.5rem;
         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        padding: 1rem;
-        margin-bottom: 1rem;
-        transition: transform 0.3s ease;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        transition: transform 0.2s ease;
+        border: 1px solid #E2E8F0;
+        overflow: auto;
+        min-height: 200px;
     }
+    
     .dashboard-card:hover {
-        transform: translateY(-5px);
+        transform: translateY(-3px);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
     }
+    
     .card-header {
         font-size: 1.2rem;
-        font-weight: bold;
+        font-weight: 700;
         color: #1E40AF;
-        margin-bottom: 0.5rem;
+        margin-bottom: 1rem;
+        border-bottom: 1px solid #EFF6FF;
+        padding-bottom: 0.5rem;
     }
+    
+    /* Slider styling */
     .stSlider > div > div {
         background-color: #EFF6FF;
     }
+    
     .stSlider > div > div > div > div {
         background-color: #3B82F6;
+    }
+    
+    /* Font adjustments for better readability */
+    label {
+        color: #0F172A !important;
+        font-weight: 600 !important;
+    }
+    
+    /* Make selectbox and number inputs more visible */
+    .stSelectbox [data-baseweb="select"] {
+        background-color: #FFFFFF;
+        border: 1px solid #CBD5E1;
+        border-radius: 0.375rem;
+    }
+    
+    .stNumberInput [data-baseweb="input"] {
+        background-color: #FFFFFF;
+        border: 1px solid #CBD5E1;
+        border-radius: 0.375rem;
+    }
+    
+    /* Fix for markdown overflowing containers */
+    .element-container div.markdown-text-container {
+        overflow: hidden;
+        word-wrap: break-word;
+    }
+    
+    /* Better table styles for feature importance */
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    
+    th, td {
+        border: 1px solid #E2E8F0;
+        padding: 0.5rem 1rem;
+        text-align: left;
+    }
+    
+    th {
+        background-color: #F1F5F9;
+        color: #334155;
+        font-weight: 600;
+    }
+    
+    tr:nth-child(even) {
+        background-color: #F8FAFC;
+    }
+    
+    /* Risk indicators with better visibility */
+    .risk-high {
+        color: #EF4444;
+        font-weight: 700;
+    }
+    
+    .risk-medium {
+        color: #F59E0B;
+        font-weight: 700;
+    }
+    
+    .risk-low {
+        color: #10B981;
+        font-weight: 700;
     }
 </style>
 """, unsafe_allow_html=True)
 
 # Sidebar for app info and additional controls
 with st.sidebar:
-    st.markdown("# 🏦 Bank Churn Analyzer")
-    st.markdown("### Customer Retention Tool")
-    st.markdown("---")
+    st.markdown("<h1 style='color:#0F172A; font-size:1.8rem;'>🏦 Bank Churn Analyzer</h1>", unsafe_allow_html=True)
+    st.markdown("<h3 style='color:#334155; font-size:1.2rem; margin-top:-0.5rem;'>Customer Retention Tool</h3>", unsafe_allow_html=True)
+    st.markdown("<hr style='margin:1rem 0; border-color:#E2E8F0;'>", unsafe_allow_html=True)
     
     # App description 
-    st.markdown("### About")
+    st.markdown("<h3 style='color:#0F172A; font-size:1.2rem; font-weight:600;'>About</h3>", unsafe_allow_html=True)
     st.markdown("""
+    <div style='color:#334155; font-size:1rem; line-height:1.5;'>
     This tool helps predict which customers are at risk of leaving the bank.
-    
+    <br><br>
     By analyzing customer data, it provides actionable insights to improve retention strategies.
-    """)
+    </div>
+    """, unsafe_allow_html=True)
     
-    st.markdown("---")
+    st.markdown("<hr style='margin:1rem 0; border-color:#E2E8F0;'>", unsafe_allow_html=True)
     
     # Add sample customer profiles for quick testing
-    st.markdown("### Sample Profiles")
+    st.markdown("<h3 style='color:#0F172A; font-size:1.2rem; font-weight:600;'>Sample Profiles</h3>", unsafe_allow_html=True)
     
     col1, col2 = st.columns(2)
     with col1:
-        if st.button("🧓 Senior"):
+        if st.button("🧓 Senior", use_container_width=True):
             st.session_state.profile_senior = True
-        if st.button("👩‍🎓 Young"):
+        if st.button("👩‍🎓 Young", use_container_width=True):
             st.session_state.profile_young = True
     with col2:
-        if st.button("💰 High Value"):
+        if st.button("💰 High Value", use_container_width=True):
             st.session_state.profile_high_value = True
-        if st.button("⚠️ At-Risk"):
+        if st.button("⚠️ At-Risk", use_container_width=True):
             st.session_state.profile_at_risk = True
     
-    st.markdown("---")
-    st.markdown("### Developed by")
-    st.markdown("Ritik Jain - 2025")
+    st.markdown("<hr style='margin:1rem 0; border-color:#E2E8F0;'>", unsafe_allow_html=True)
+    st.markdown("<div style='color:#334155; font-size:1rem;'>Developed by<br><strong>Ritik Jain - 2025</strong></div>", unsafe_allow_html=True)
     
 # Main content
 st.markdown('<div class="dashboard-card"><h1 class="main-header">Customer Churn Prediction</h1><p class="sub-header">Predict and prevent customer attrition with advanced analytics</p></div>', unsafe_allow_html=True)
@@ -262,13 +388,13 @@ try:
         
         # Add age group indicator for context
         age_group = "Senior Citizen (65+)" if age >= 65 else "Middle-aged (35-64)" if age >= 35 else "Young Adult (18-34)"
-        st.markdown(f"<div style='text-align: right; color: #6B7280; font-size: 0.9rem;'>{age_group}</div>", unsafe_allow_html=True)
+        st.markdown(f"<div style='text-align: right; color: #334155; font-size: 0.9rem; font-weight: 500;'>{age_group}</div>", unsafe_allow_html=True)
         
         tenure = st.slider('Tenure (years)', 0, 10, default_tenure, help="How long the customer has been with the bank")
         
         # Add loyalty indicator
         loyalty = "Long-term Customer" if tenure >= 7 else "Regular Customer" if tenure >= 3 else "New Customer"
-        st.markdown(f"<div style='text-align: right; color: #6B7280; font-size: 0.9rem;'>{loyalty}</div>", unsafe_allow_html=True)
+        st.markdown(f"<div style='text-align: right; color: #334155; font-size: 0.9rem; font-weight: 500;'>{loyalty}</div>", unsafe_allow_html=True)
         st.markdown('</div>', unsafe_allow_html=True)
     
     with col2:
@@ -281,13 +407,13 @@ try:
         
         # Add credit quality indicator
         credit_quality = "Excellent" if credit_score >= 750 else "Good" if credit_score >= 650 else "Fair" if credit_score >= 550 else "Poor"
-        st.markdown(f"<div style='text-align: right; color: #6B7280; font-size: 0.9rem;'>Credit Quality: {credit_quality}</div>", unsafe_allow_html=True)
+        st.markdown(f"<div style='text-align: right; color: #334155; font-size: 0.9rem; font-weight: 500;'>Credit Quality: {credit_quality}</div>", unsafe_allow_html=True)
         
         balance = st.number_input('Account Balance ($)', min_value=0.0, max_value=250000.0, value=default_balance, step=1000.0, format="%.2f")
         
         # Add balance tier indicator
         balance_tier = "Premium" if balance >= 100000 else "Standard" if balance >= 10000 else "Basic"
-        st.markdown(f"<div style='text-align: right; color: #6B7280; font-size: 0.9rem;'>Account Tier: {balance_tier}</div>", unsafe_allow_html=True)
+        st.markdown(f"<div style='text-align: right; color: #334155; font-size: 0.9rem; font-weight: 500;'>Account Tier: {balance_tier}</div>", unsafe_allow_html=True)
         
         estimated_salary = st.number_input('Estimated Salary ($)', min_value=0.0, max_value=200000.0, value=default_salary, step=5000.0, format="%.2f")
         num_of_products = st.slider('Number of Products', 1, 4, default_products, help="Number of bank products the customer uses")
@@ -382,37 +508,64 @@ try:
                         mode = "gauge+number",
                         value = prediction_proba,
                         domain = {'x': [0, 1], 'y': [0, 1]},
-                        title = {'text': "Churn Probability", 'font': {'size': 24}},
+                        title = {'text': "Churn Probability", 'font': {'size': 24, 'color': '#0F172A', 'family': 'Arial, sans-serif'}},
                         gauge = {
-                            'axis': {'range': [0, 1], 'tickwidth': 1, 'tickcolor': "darkblue"},
-                            'bar': {'color': "darkblue"},
+                            'axis': {'range': [0, 1], 'tickwidth': 1, 'tickcolor': "#334155"},
+                            'bar': {'color': "#2563EB"},
                             'bgcolor': "white",
                             'borderwidth': 2,
-                            'bordercolor': "gray",
+                            'bordercolor': "#CBD5E1",
                             'steps': [
-                                {'range': [0, 0.3], 'color': 'green'},
-                                {'range': [0.3, 0.7], 'color': 'yellow'},
-                                {'range': [0.7, 1], 'color': 'red'}
+                                {'range': [0, 0.3], 'color': '#DCFCE7'},
+                                {'range': [0.3, 0.7], 'color': '#FEF9C3'},
+                                {'range': [0.7, 1], 'color': '#FEE2E2'}
                             ],
                         }
                     ))
+                    
+                    fig.update_layout(
+                        height=300,
+                        margin=dict(l=20, r=20, t=50, b=20),
+                        paper_bgcolor='white',
+                        font=dict(family="Arial, sans-serif", size=14, color="#0F172A")
+                    )
+                    
                     st.plotly_chart(fig, use_container_width=True)
                 else:
                     # Fallback for when Plotly is not available
-                    st.markdown(f"<div style='text-align:center'><h1 style='font-size:4rem;'>{prediction_proba:.2f}</h1><p>Churn Probability</p></div>", unsafe_allow_html=True)
-                    st.progress(float(prediction_proba))
+                    st.markdown(f"""
+                    <div style='text-align:center; background-color:white; padding:2rem; border-radius:0.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom:1rem;'>
+                        <h1 style='font-size:3.5rem; color:#0F172A; margin-bottom:0.5rem;'>{prediction_proba:.2f}</h1>
+                        <p style='font-size:1.2rem; color:#334155; font-weight:500;'>Churn Probability</p>
+                    </div>
+                    """, unsafe_allow_html=True)
+                    
+                    # Add colored progress bar with labels
+                    progress_color = "#DCFCE7" if prediction_proba < 0.3 else "#FEF9C3" if prediction_proba < 0.7 else "#FEE2E2"
+                    st.markdown(f"""
+                    <div style='margin-bottom:1.5rem;'>
+                        <div style='display:flex; justify-content:space-between; margin-bottom:0.25rem;'>
+                            <span style='color:#334155; font-size:0.9rem;'>Low Risk</span>
+                            <span style='color:#334155; font-size:0.9rem;'>High Risk</span>
+                        </div>
+                        <div style='height:1rem; background-color:#F1F5F9; border-radius:9999px; overflow:hidden;'>
+                            <div style='height:100%; width:{prediction_proba*100}%; background-color:{progress_color};'></div>
+                        </div>
+                    </div>
+                    """, unsafe_allow_html=True)
             
             with res_col2:
                 # Show risk level with icon
                 risk_level = "High Risk" if prediction_proba > 0.7 else "Medium Risk" if prediction_proba > 0.3 else "Low Risk"
                 risk_icon = "🔴" if prediction_proba > 0.7 else "🟡" if prediction_proba > 0.3 else "🟢"
+                risk_class = "risk-high" if prediction_proba > 0.7 else "risk-medium" if prediction_proba > 0.3 else "risk-low"
                 
-                st.markdown(f"<div style='text-align:center'><h2>{risk_icon} {risk_level}</h2></div>", unsafe_allow_html=True)
+                st.markdown(f"<div style='text-align:center; margin-bottom:1rem;'><h2 class='{risk_class}' style='font-size:1.8rem;'>{risk_icon} {risk_level}</h2></div>", unsafe_allow_html=True)
                 
                 # Show result with formatting based on the prediction
                 if prediction_proba > 0.5:
-                    st.markdown('<div class="prediction-negative">⚠️ The customer is likely to churn.</div>', unsafe_allow_html=True)
-                    st.markdown('<div class="info-box"><b>Key Risk Factors:</b></div>', unsafe_allow_html=True)
+                    st.markdown('<div class="prediction-negative">⚠️ This customer is likely to churn.</div>', unsafe_allow_html=True)
+                    st.markdown('<div class="info-box"><strong style="color:#0F172A">Key Risk Factors:</strong></div>', unsafe_allow_html=True)
                     
                     # Display key risk factors
                     risk_factors = []
@@ -428,9 +581,9 @@ try:
                         risk_factors.append("- Limited product usage")
                     
                     for factor in risk_factors:
-                        st.markdown(f'<div class="info-box">{factor}</div>', unsafe_allow_html=True)
+                        st.markdown(f'<div class="info-box" style="padding:0.5rem 1rem; margin-bottom:0.5rem;">{factor}</div>', unsafe_allow_html=True)
                 else:
-                    st.markdown('<div class="prediction-positive">✅ The customer is likely to stay.</div>', unsafe_allow_html=True)
+                    st.markdown('<div class="prediction-positive">✅ This customer is likely to stay.</div>', unsafe_allow_html=True)
                     
                     # Show retention factors
                     retention_factors = []
@@ -444,9 +597,9 @@ try:
                         retention_factors.append("- Multiple products")
                     
                     if retention_factors:
-                        st.markdown('<div class="info-box"><b>Retention Strengths:</b></div>', unsafe_allow_html=True)
+                        st.markdown('<div class="info-box"><strong style="color:#0F172A">Retention Strengths:</strong></div>', unsafe_allow_html=True)
                         for factor in retention_factors:
-                            st.markdown(f'<div class="info-box">{factor}</div>', unsafe_allow_html=True)
+                            st.markdown(f'<div class="info-box" style="padding:0.5rem 1rem; margin-bottom:0.5rem;">{factor}</div>', unsafe_allow_html=True)
             
             st.markdown('</div>', unsafe_allow_html=True)  # Close dashboard card
         
@@ -458,40 +611,53 @@ try:
             with rec_col1:
                 st.markdown('<div class="card-header">Action Plan</div>', unsafe_allow_html=True)
                 if prediction_proba > 0.7:
-                    st.markdown('<div class="info-box">🔴 <b>Urgent Intervention Required</b></div>', unsafe_allow_html=True)
+                    st.markdown('<div class="info-box" style="border-left: 4px solid #EF4444;"><span style="font-weight:600; color:#7F1D1D;">🔴 Urgent Intervention Required</span></div>', unsafe_allow_html=True)
                     st.markdown('<div class="info-box">• Call customer within 24 hours</div>', unsafe_allow_html=True)
                     st.markdown('<div class="info-box">• Offer personalized retention package</div>', unsafe_allow_html=True)
                     st.markdown('<div class="info-box">• Schedule account review</div>', unsafe_allow_html=True)
                 elif prediction_proba > 0.4:
-                    st.markdown('<div class="info-box">🟡 <b>Proactive Retention Needed</b></div>', unsafe_allow_html=True)
+                    st.markdown('<div class="info-box" style="border-left: 4px solid #F59E0B;"><span style="font-weight:600; color:#78350F;">🟡 Proactive Retention Needed</span></div>', unsafe_allow_html=True)
                     st.markdown('<div class="info-box">• Contact within 7 days</div>', unsafe_allow_html=True)
                     st.markdown('<div class="info-box">• Offer loyalty discount</div>', unsafe_allow_html=True)
                     st.markdown('<div class="info-box">• Conduct satisfaction survey</div>', unsafe_allow_html=True)
                 else:
-                    st.markdown('<div class="info-box">🟢 <b>Relationship Building</b></div>', unsafe_allow_html=True)
+                    st.markdown('<div class="info-box" style="border-left: 4px solid #10B981;"><span style="font-weight:600; color:#065F46;">🟢 Relationship Building</span></div>', unsafe_allow_html=True)
                     st.markdown('<div class="info-box">• Include in regular outreach</div>', unsafe_allow_html=True)
                     st.markdown('<div class="info-box">• Consider for product cross-selling</div>', unsafe_allow_html=True)
             
             with rec_col2:
                 st.markdown('<div class="card-header">Product Recommendations</div>', unsafe_allow_html=True)
                 
+                # Make sure we always show some recommendations to avoid empty space
+                recommendations = []
+                
                 if num_of_products == 1:
-                    st.markdown('<div class="info-box">• Savings account with higher interest</div>', unsafe_allow_html=True)
-                    st.markdown('<div class="info-box">• Credit card with rewards program</div>', unsafe_allow_html=True)
+                    recommendations.append('<div class="info-box">• Savings account with higher interest</div>')
+                    recommendations.append('<div class="info-box">• Credit card with rewards program</div>')
                 
                 if has_cr_card_value == 0:
-                    st.markdown('<div class="info-box">• Premium credit card with travel benefits</div>', unsafe_allow_html=True)
+                    recommendations.append('<div class="info-box">• Premium credit card with travel benefits</div>')
                 
                 if balance > 50000:
-                    st.markdown('<div class="info-box">• Investment portfolio management</div>', unsafe_allow_html=True)
-                    st.markdown('<div class="info-box">• Wealth management consultation</div>', unsafe_allow_html=True)
+                    recommendations.append('<div class="info-box">• Investment portfolio management</div>')
+                    recommendations.append('<div class="info-box">• Wealth management consultation</div>')
                 
                 if age > 55:
-                    st.markdown('<div class="info-box">• Retirement planning services</div>', unsafe_allow_html=True)
+                    recommendations.append('<div class="info-box">• Retirement planning services</div>')
                 
                 if age < 30:
-                    st.markdown('<div class="info-box">• First-home buyer mortgage options</div>', unsafe_allow_html=True)
-                    st.markdown('<div class="info-box">• Digital banking enhancements</div>', unsafe_allow_html=True)
+                    recommendations.append('<div class="info-box">• First-home buyer mortgage options</div>')
+                    recommendations.append('<div class="info-box">• Digital banking enhancements</div>')
+                
+                # Add default recommendations if none were triggered
+                if len(recommendations) == 0:
+                    recommendations.append('<div class="info-box">• Regular account checkup</div>')
+                    recommendations.append('<div class="info-box">• Online banking features review</div>')
+                    recommendations.append('<div class="info-box">• Customer satisfaction survey</div>')
+                
+                # Display recommendations (up to 4 to avoid overflow)
+                for recommendation in recommendations[:4]:
+                    st.markdown(recommendation, unsafe_allow_html=True)
             
             st.markdown('</div>', unsafe_allow_html=True)  # Close dashboard card
         
@@ -513,42 +679,102 @@ try:
                 title='Factors Influencing Churn Prediction',
                 color=importances,
                 color_continuous_scale='Blues',
+                text=[f"{v:.0%}" for v in importances]  # Add percentage labels
             )
             
             fig.update_layout(
                 xaxis_title="Impact on Prediction",
                 yaxis_title="Customer Attribute",
                 height=400,
+                margin=dict(l=20, r=20, t=50, b=20),
+                paper_bgcolor='white',
+                plot_bgcolor='white',
+                font=dict(family="Arial, sans-serif", size=14, color="#0F172A"),
+                showlegend=False
+            )
+            
+            # Improve text placement and appearance
+            fig.update_traces(
+                textposition='outside',
+                textfont=dict(
+                    family="Arial, sans-serif",
+                    size=14,
+                    color="#0F172A"
+                )
+            )
+            
+            # Improve y-axis appearance
+            fig.update_yaxes(
+                tickfont=dict(
+                    family="Arial, sans-serif",
+                    size=14,
+                    color="#0F172A"
+                )
             )
             
             st.plotly_chart(fig, use_container_width=True)
             st.markdown('</div>', unsafe_allow_html=True)  # Close dashboard card
         else:
-            # Fallback for when Plotly is not available
+            # Fallback for when Plotly is not available - use a table instead
             st.markdown('<div class="dashboard-card"><h2 class="section-header">Key Factors</h2>', unsafe_allow_html=True)
-            st.write("From most to least important:")
-            st.markdown("1. **Account Activity** - Inactive members are 5× more likely to churn")
-            st.markdown("2. **Account Balance** - Low balance customers have higher churn risk")
-            st.markdown("3. **Age** - Young adults and seniors have distinct churn patterns")
-            st.markdown("4. **Tenure** - New customers churn at higher rates")
-            st.markdown("5. **Number of Products** - More products correlates with higher retention")
+            
+            # Create a simple HTML table for better formatting
+            st.markdown("""
+            <table style="width:100%; border-collapse: collapse; margin-top: 1rem;">
+                <tr>
+                    <th style="padding:0.75rem; text-align:left; border:1px solid #E2E8F0; background-color:#F1F5F9;">Factor</th>
+                    <th style="padding:0.75rem; text-align:left; border:1px solid #E2E8F0; background-color:#F1F5F9;">Impact on Churn</th>
+                    <th style="padding:0.75rem; text-align:left; border:1px solid #E2E8F0; background-color:#F1F5F9;">Description</th>
+                </tr>
+                <tr>
+                    <td style="padding:0.75rem; border:1px solid #E2E8F0;"><strong>Account Activity</strong></td>
+                    <td style="padding:0.75rem; border:1px solid #E2E8F0;">25%</td>
+                    <td style="padding:0.75rem; border:1px solid #E2E8F0;">Inactive members are 5× more likely to churn</td>
+                </tr>
+                <tr>
+                    <td style="padding:0.75rem; border:1px solid #E2E8F0;"><strong>Account Balance</strong></td>
+                    <td style="padding:0.75rem; border:1px solid #E2E8F0;">18%</td>
+                    <td style="padding:0.75rem; border:1px solid #E2E8F0;">Low balance customers have higher churn risk</td>
+                </tr>
+                <tr>
+                    <td style="padding:0.75rem; border:1px solid #E2E8F0;"><strong>Age</strong></td>
+                    <td style="padding:0.75rem; border:1px solid #E2E8F0;">15%</td>
+                    <td style="padding:0.75rem; border:1px solid #E2E8F0;">Young adults and seniors have distinct churn patterns</td>
+                </tr>
+                <tr>
+                    <td style="padding:0.75rem; border:1px solid #E2E8F0;"><strong>Tenure</strong></td>
+                    <td style="padding:0.75rem; border:1px solid #E2E8F0;">12%</td>
+                    <td style="padding:0.75rem; border:1px solid #E2E8F0;">New customers churn at higher rates</td>
+                </tr>
+                <tr>
+                    <td style="padding:0.75rem; border:1px solid #E2E8F0;"><strong>Number of Products</strong></td>
+                    <td style="padding:0.75rem; border:1px solid #E2E8F0;">10%</td>
+                    <td style="padding:0.75rem; border:1px solid #E2E8F0;">More products correlates with higher retention</td>
+                </tr>
+            </table>
+            """, unsafe_allow_html=True)
+            
             st.markdown('</div>', unsafe_allow_html=True)  # Close dashboard card
 
 except Exception as e:
     st.error(f"An error occurred: {str(e)}")
     
-    # Show a simplified fallback version of the form
-    st.markdown('<div class="dashboard-card">', unsafe_allow_html=True)
-    st.header("Simple Churn Predictor")
-    st.write("The advanced predictor is currently unavailable. Please use this simplified version.")
+    # Show a simplified fallback version of the form with better styling
+    st.markdown("""
+    <div style="background-color:white; padding:2rem; border-radius:0.5rem; box-shadow:0 4px 6px -1px rgba(0,0,0,0.1); margin-bottom:1.5rem;">
+        <h2 style="color:#0F172A; font-size:1.5rem; margin-bottom:1rem; font-weight:600;">Simple Churn Predictor</h2>
+        <p style="color:#334155; margin-bottom:1.5rem;">The advanced predictor is currently unavailable. Please use this simplified version.</p>
+    </div>
+    """, unsafe_allow_html=True)
     
-    # Simplified form
+    # Simplified form with better styling
+    st.markdown("<div style='background-color:white; padding:2rem; border-radius:0.5rem; box-shadow:0 4px 6px -1px rgba(0,0,0,0.1);'>", unsafe_allow_html=True)
     age = st.slider("Age", 18, 92, 35)
     balance = st.number_input("Balance", 0.0, 250000.0, 10000.0)
     is_active = st.selectbox("Is Active Member?", ["Yes", "No"])
     num_products = st.slider("Number of Products", 1, 4, 1)
     
-    if st.button("Calculate Risk"):
+    if st.button("Calculate Risk", use_container_width=False):
         # Simple heuristic
         risk = 0.3
         
@@ -568,25 +794,58 @@ except Exception as e:
             
         risk = max(0.01, min(0.99, risk))
         
-        st.progress(risk)
-        st.write(f"Churn Risk: {risk:.2f}")
+        # Display results with better styling
+        risk_level = "High Risk" if risk > 0.7 else "Medium Risk" if risk > 0.3 else "Low Risk"
+        risk_color = "#EF4444" if risk > 0.7 else "#F59E0B" if risk > 0.3 else "#10B981"
+        
+        st.markdown(f"""
+        <div style="margin-top:1.5rem; text-align:center;">
+            <h3 style="color:{risk_color}; font-size:1.8rem; font-weight:600;">{risk_level}</h3>
+            <div style="font-size:1.2rem; color:#334155; margin-bottom:1rem;">Churn Probability: <strong>{risk:.2f}</strong></div>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        # Better progress bar
+        st.markdown(f"""
+        <div style="margin:1rem 0 1.5rem 0;">
+            <div style="height:0.75rem; background-color:#F1F5F9; border-radius:9999px; overflow:hidden;">
+                <div style="height:100%; width:{risk*100}%; background-color:{risk_color};"></div>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
         
         if risk > 0.5:
-            st.error("High risk of churn")
+            st.markdown("""
+            <div style="background-color:#FEE2E2; color:#7F1D1D; padding:1rem; border-radius:0.5rem; margin-top:1rem; border-left:0.25rem solid #EF4444;">
+                <strong>⚠️ High risk of churn</strong>
+                <p style="margin-top:0.5rem; margin-bottom:0;">This customer requires immediate attention and a personalized retention strategy.</p>
+            </div>
+            """, unsafe_allow_html=True)
         else:
-            st.success("Low risk of churn")
-    st.markdown('</div>', unsafe_allow_html=True)  # Close dashboard card
+            st.markdown("""
+            <div style="background-color:#DCFCE7; color:#14532D; padding:1rem; border-radius:0.5rem; margin-top:1rem; border-left:0.25rem solid #10B981;">
+                <strong>✅ Low risk of churn</strong>
+                <p style="margin-top:0.5rem; margin-bottom:0;">This customer appears stable. Consider opportunities for cross-selling and relationship building.</p>
+            </div>
+            """, unsafe_allow_html=True)
+    st.markdown("</div>", unsafe_allow_html=True)  # Close dashboard card
 
-# Show information about the model
+# Show information about the model with improved styling
 with st.expander("About this predictor"):
-    st.write("""
-    This app uses a predictive model to estimate the likelihood of customer churn based on:
-    
-    - **Demographics**: Age, gender, geography
-    - **Banking relationship**: Tenure, balance, number of products
-    - **Engagement**: Activity status, credit card ownership
-    
-    The model analyzes these factors to identify customers who might be at risk of leaving the bank.
-    
-    For optimal retention results, focus on customers with a churn probability above 0.5.
-    """)
+    st.markdown("""
+    <div style="color:#334155; line-height:1.6;">
+        <p>This app uses a predictive model to estimate the likelihood of customer churn based on:</p>
+        
+        <ul style="margin-top:0.75rem; margin-bottom:1rem;">
+            <li><strong>Demographics</strong>: Age, gender, geography</li>
+            <li><strong>Banking relationship</strong>: Tenure, balance, number of products</li>
+            <li><strong>Engagement</strong>: Activity status, credit card ownership</li>
+        </ul>
+        
+        <p>The model analyzes these factors to identify customers who might be at risk of leaving the bank.</p>
+        
+        <div style="background-color:#EFF6FF; padding:1rem; border-radius:0.5rem; margin-top:1rem; border-left:0.25rem solid #3B82F6;">
+            <strong style="color:#1E3A8A;">Pro Tip:</strong> For optimal retention results, focus on customers with a churn probability above 0.5.
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
